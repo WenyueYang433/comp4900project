@@ -21,7 +21,7 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 Point = namedtuple('Point', 'x, y')
 BLOCK_SIZE = 20
-SPEED = 40
+SPEED = 80
 
 # Create the display surface
 class SnakeGame:
@@ -86,19 +86,18 @@ class SnakeGame:
         self.clock.tick(SPEED)
         # 6. return game over and score
         return reward, game_over, self.score
-    
-    def display_score(self,score):
-        font = pygame.font.Font(None, 36)
-        text = font.render(f"Score: {score}", True, (0, 0, 0))
-        self.screen.blit(text, (SCREEN_WIDTH - 150, 10))
-        
+
     def _update_ui(self):
-        self.display.fill(WHITE)
+        self.screen.fill(WHITE)
 
         for pt in self.snake:
-            pygame.draw.rect(self.display, GREEN, pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
-        pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
-        self.display_score(self,self.score)
+            pygame.draw.rect(self.screen, GREEN, pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
+        pygame.draw.rect(self.screen, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
+        
+        font = pygame.font.Font(None, 36)
+        text = font.render("Score: " + str(self.score), True, (0,0,0))
+        self.screen.blit(text, (SCREEN_WIDTH - 150, 10))
+        
         pygame.display.flip()
 
     def is_collision(self, pt=None):
@@ -142,4 +141,3 @@ class SnakeGame:
             y -= BLOCK_SIZE
 
         self.head = Point(x, y)
-
