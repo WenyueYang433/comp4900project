@@ -325,11 +325,15 @@ def train():
 
             print('Game', agent.n_games, 'Score', score+score2, 'Record:', record)
 
-            plot_scores.append(score+score2)
-            total_score += score+score2
+            plot_scores.append(score)
+            plot_scores2.append(score2)
+            total_score += score
+            total_score2 += score2
             mean_score = total_score / agent.n_games
+            mean_score2 = total_score2 / agent.n_games
             plot_mean_scores.append(mean_score)
-            plot(plot_scores, plot_mean_scores)
+            plot_mean_scores2.append(mean_score2)
+            plot(plot_scores, plot_mean_scores, plot_scores2, plot_mean_scores2)
 
 
 if __name__ == '__main__':
