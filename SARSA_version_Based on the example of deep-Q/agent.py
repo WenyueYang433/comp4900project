@@ -3,7 +3,7 @@ import random
 import numpy as np
 from collections import deque
 from game import SnakeGameAI, Direction, Point
-from model import Linear_QNet, QTrainer
+from model import SarsaNet, SarsaTrainer
 from helper import plot
 
 MAX_MEMORY = 100_000
@@ -17,8 +17,8 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(11, 256, 3)
-        self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
+        self.model = SarsaNet(11, 256, 3)
+        self.trainer = SarsaTrainer(self.model, lr=LR, gamma=self.gamma)
 
 
     def get_state(self, game):
