@@ -46,14 +46,24 @@ class SnakeGame:
         self.score = 0
         self.food = None
         self._place_food()
-        
+        self.food2 = None
+        self._place_food2()
+
     def _place_food(self):
         x = random.randint(0, (self.w-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE 
         y = random.randint(0, (self.h-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE
         self.food = Point(x, y)
         if self.food in self.snake:
             self._place_food()
-        
+
+    def _place_food2(self):
+        x = random.randint(0, (self.w-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE 
+        y = random.randint(0, (self.h-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE
+        self.food2 = Point(x, y)
+        if self.food2 in self.snake2:
+            self._place_food2()
+
+
     def play_step(self):
         # 1. collect user input
         for event in pygame.event.get():

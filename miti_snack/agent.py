@@ -74,8 +74,9 @@ class Agent:
             
         return np.array(state, dtype=int)
     
-    def remember(self, state, action, reward, next_state, done):
-        self.memory.append((state, action, reward, next_state, done)) # popleft if MAX_MEMORY is reached
+
+    def remember(self, state, action, reward, next_state,a, done):
+        self.memory.append((state, action, reward, next_state,a, done)) # popleft if MAX_MEMORY is reached
 
     def train_long_memory(self):
         if len(self.memory) > BATCH_SIZE:
@@ -83,13 +84,14 @@ class Agent:
         else:
             mini_sample = self.memory
 
-        states, actions, rewards, next_states, dones = zip(*mini_sample)
-        self.trainer.train_step(states, actions, rewards, next_states, dones)
+        states, actions, rewards, next_states, a, dones = zip(*mini_sample)
+       
+        self.trainer.train_step(states, actions, rewards, next_states, a, dones,2)
         #for state, action, reward, nexrt_state, done in mini_sample:
         #    self.trainer.train_step(state, action, reward, next_state, done)
-
-    def train_short_memory(self, state, action, reward, next_state, done):
-        self.trainer.train_step(state, action, reward, next_state, done)
+    
+    def train_short_memory(self, state, action, reward, next_state,a, done):
+        self.trainer.train_step(state, action, reward, next_state,a, done,1)
 
     def get_action(self, state):
         # random moves: tradeoff exploration / exploitation
@@ -163,10 +165,10 @@ class Agent2:
                 dir_d2,
                 
                 # Food location 
-                game.food.x < game.head2.x,  # food left
-                game.food.x > game.head2.x,  # food right
-                game.food.y < game.head2.y,  # food up
-                game.food.y > game.head2.y  # food down
+                game.food2.x < game.head2.x,  # food left
+                game.food2.x > game.head2.x,  # food right
+                game.food2.y < game.head2.y,  # food up
+                game.food2.y > game.head2.y  # food down
                 ]
         return np.array(state, dtype=int)
 
@@ -189,7 +191,7 @@ class Agent2:
 
     def get_action(self, state):
         # random moves: tradeoff exploration / exploitation
-        self.epsilon = 80 - self.n_games
+        self.epsilon = 160 - self.n_games
         final_move = [0,0,0]
         if random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 2)
@@ -229,11 +231,13 @@ def train():
 
         state_new = agent.get_state(game)
         state_new2 = agent2.get_state(game)
+
+        a2 = agent.get_action(state_new)
         # train short memory
-        agent.train_short_memory(state_old, final_move, reward, state_new, done)
+        agent.train_short_memory(state_old, final_move, reward, state_new,a2, done)
         agent2.train_short_memory(state_old2, final_move2, reward2, state_new2, done2)
         # remember
-        agent.remember(state_old, final_move, reward, state_new, done)
+        agent.remember(state_old, final_move, reward, state_new,a2, done)
         agent2.remember(state_old2, final_move2, reward2, state_new2, done2)
 
         

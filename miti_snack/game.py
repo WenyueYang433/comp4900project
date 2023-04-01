@@ -24,6 +24,7 @@ BLUE2 = (0, 100, 255)
 CORLOR1 = (255, 0, 255)
 CORLOR2 = (255,100, 255)
 BLACK = (0,0,0)
+YELLOW=(255,255,0)
 
 BLOCK_SIZE = 20
 SPEED = 40
@@ -57,6 +58,8 @@ class SnakeGameAI:
         self.score2 = 0
         self.food = None
         self._place_food()
+        self.food2 = None
+        self._place_food2()
         self.frame_iteration = 0
         self.frame_iteration2 = 0
 
@@ -70,6 +73,8 @@ class SnakeGameAI:
                       Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
         self.score = 0
         self.frame_iteration = 0
+        self.food = None
+        self._place_food()
     
     def reset2(self):
         # init game state
@@ -81,15 +86,23 @@ class SnakeGameAI:
                       Point(self.head2.x-(2*BLOCK_SIZE), self.head2.y)]
         self.score2 = 0
         self.frame_iteration2 = 0
+        self.food2 = None
+        self._place_food2()
 
     def _place_food(self):
         x = random.randint(0, (self.w-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE
         y = random.randint(0, (self.h-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE
         self.food = Point(x, y)
-        if self.food in self.snake and self.food in self.snake2:
+        if self.food in self.snake:
             self._place_food()
         
-
+    def _place_food2(self):
+        x = random.randint(0, (self.w-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE
+        y = random.randint(0, (self.h-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE
+        self.food2 = Point(x, y)
+        if self.food2 in self.snake2:
+            self._place_food2()
+        
 
     def play_step(self, action,action2):
         self.frame_iteration += 1
@@ -125,6 +138,7 @@ class SnakeGameAI:
             reward = -10
             return 0, False, self.score,reward, game_over, self.score2
         
+        
         # 4. place new food or just move
         if self.head == self.food :
             self.score += 1
@@ -133,10 +147,10 @@ class SnakeGameAI:
         else:
             self.snake.pop()
         
-        if self.head2 == self.food :
+        if self.head2 == self.food2 :
             self.score2 += 1
             reward2 = 10
-            self._place_food()
+            self._place_food2()
         else:
             self.snake2.pop()
 
@@ -173,6 +187,7 @@ class SnakeGameAI:
         if pt2 in self.snake2[1:] or pt in self.snake2[1:] or pt2 in self.snake[1:] or pt2 in self.snake[1:]:
             return True
         return False
+    
     def is_collision3(self, pt=None, pt2=None):
         if pt is None:
             pt = self.head
@@ -182,6 +197,7 @@ class SnakeGameAI:
         if pt2 in self.snake2[1:] or pt in self.snake2[1:] or pt2 in self.snake[1:] or pt2 in self.snake[1:]:
             return True
         return False
+    
     
     def _update_ui(self):
         self.display.fill(BLACK)
@@ -196,6 +212,7 @@ class SnakeGameAI:
 
 
         pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
+        pygame.draw.rect(self.display, YELLOW, pygame.Rect(self.food2.x, self.food2.y, BLOCK_SIZE, BLOCK_SIZE))
 
         text = font.render("Score: " + str(self.score)+", Score2: " + str(self.score2), True, WHITE)
         self.display.blit(text, [0, 0])
