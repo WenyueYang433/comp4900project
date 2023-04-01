@@ -3,7 +3,7 @@ import random
 import numpy as np
 from collections import deque
 from game import SnakeGameAI, Direction, Point
-from model import Linear_QNet, QTrainer
+from model import SarsaNet, SarsaTrainer
 from helper import plot
 
 MAX_MEMORY = 100_000
@@ -17,8 +17,8 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(11, 256, 3)
-        self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
+        self.model = SarsaNet(11, 256, 3)
+        self.trainer = SarsaTrainer(self.model, lr=LR, gamma=self.gamma)
 
 
     def get_state(self, game):
@@ -67,8 +67,8 @@ class Agent:
 
         return np.array(state, dtype=int)
 
-    def remember(self, state, action, reward, next_state, done):
-        self.memory.append((state, action, reward, next_state, done)) # popleft if MAX_MEMORY is reached
+    def remember(self, state, action, reward, next_state,a2, done):
+        self.memory.append((state, action, reward, next_state,a2, done)) # popleft if MAX_MEMORY is reached
 
     def train_long_memory(self,a):
         if len(self.memory) > BATCH_SIZE:
@@ -76,9 +76,9 @@ class Agent:
         else:
             mini_sample = self.memory
 
-        states, actions, rewards, next_states, dones = zip(*mini_sample)
+        states, actions, rewards, next_states,a2, dones = zip(*mini_sample)
        
-        self.trainer.train_step(states, actions, rewards, next_states, a, dones,2)
+        self.trainer.train_step(states, actions, rewards, next_states, a2, dones,2)
         #for state, action, reward, nexrt_state, done in mini_sample:
         #    self.trainer.train_step(state, action, reward, next_state, done)
     
@@ -123,7 +123,7 @@ def train():
         agent.train_short_memory(state_old, final_move, reward, state_new,a2, done)
 
         # remember
-        agent.remember(state_old, final_move, reward, state_new, done)
+        agent.remember(state_old, final_move, reward, state_new,a2, done)
 
         if done:
             # train long memory, plot result
